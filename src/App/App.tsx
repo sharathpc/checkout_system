@@ -14,6 +14,10 @@ interface SpecialOffer {
   discount_price: number
 }
 
+interface CartItem extends Product {
+  quantity: number,
+}
+
 const products: Product[] = [{
   id: 1,
   name: 'A',
@@ -47,10 +51,26 @@ const specialOffers: SpecialOffer[] = [{
 }];
 
 const App = () => {
-  const [basket, setBasket] = useState<Product[]>([]);
+  const [basket, setBasket] = useState<CartItem[]>([]);
 
   const addProductHandler = (item: Product): void => {
+    let productExist: boolean = false;
+    let products = basket.map((pItem: CartItem) => {
+      if (pItem.id === item.id) {
+        productExist = true;
+        pItem.quantity += 1;
+      }
+      return pItem;
+    })
 
+    if (!productExist) {
+      products.push({
+        ...item,
+        quantity: 1
+      })
+    }
+
+    setBasket([...products]);
   }
 
   const removeProductHandler = (item: Product): void => {
@@ -89,11 +109,11 @@ const App = () => {
             <ul className="list-group">
               {basket.map(item =>
                 <li className="list-group-item d-flex justify-content-between align-items-center" key={item.id}>
-                  <div className="d-flex align-items-center">
+                  <div className="d-flex w-100 align-items-center">
                     <img className="me-3" src={item.image} alt={item.name} />
-                    <div>
+                    <div className="d-flex w-100 justify-content-between align-items-center">
                       <h5 className="mb-0">Product {item.name}</h5>
-                      <small>Price: {item.unit_price}</small>
+                      <span className="badge bg-primary rounded-pill">{item.quantity}</span>
                     </div>
                   </div>
                 </li>
