@@ -1,5 +1,6 @@
 {
   "name": "checkout_system",
+  "homepage": "http://sharathpc.github.io/checkout_system"
   "version": "0.1.0",
   "private": true,
   "dependencies": {
