@@ -163,6 +163,12 @@ const App = () => {
                       <small>Price: {priceFormatter(item.unit_price)}</small>
                     </div>
                   </div>
+                  {item.offer && <div>
+                    <small>Discount: </small>
+                    <div className="badge rounded-pill text-bg-success">
+                      {item.offer.no_of_units} for {priceFormatter(item.offer.discount_price)}
+                    </div>
+                  </div>}
                   <div className="btn-group me-2" role="group">
                     <button type="button" className="btn btn-outline-secondary" onClick={() => removeProductHandler(item)}>-</button>
                     <button type="button" className="btn btn-outline-primary" onClick={() => addProductHandler(item)}>+</button>
@@ -206,7 +212,9 @@ const App = () => {
                       <small>{priceFormatter(item.actual_price)}</small>
                     </td>
                     <td className="number-class">
-                      {item?.special_price && <small>{priceFormatter(item.special_price)}</small>}
+                      {item?.special_price && <small>{
+                        item.actual_price !== item.special_price && priceFormatter(item.special_price)
+                      }</small>}
                     </td>
                   </tr>
                 )}
