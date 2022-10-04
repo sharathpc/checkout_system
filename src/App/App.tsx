@@ -55,8 +55,10 @@ const products: Product[] = [{
 
 const App = () => {
   const [basket, setBasket] = useState<CartItem[]>([]);
+  const [basketTotal, setBasketTotal] = useState<number>(0);
 
   const addProductHandler = (item: Product): void => {
+    let totalPrice: number = 0;
     let products: CartItem[] = [...basket];
 
     let product = basket.find(pItem => pItem.id === item.id);
@@ -74,36 +76,72 @@ const App = () => {
         pItem.quantity += 1;
         pItem.actual_price = calculateActualPrice(pItem.quantity, pItem.unit_price);
       }
+
+      if (pItem.offer) {
+        pItem.special_price = calculateDiscountPrice(
+          pItem.quantity,
+          pItem.unit_price,
+          pItem.offer
+        )
+      }
+
+      totalPrice += pItem.special_price || pItem.actual_price;
       return pItem;
     })
 
     setBasket([...products]);
+    setBasketTotal(totalPrice);
   }
 
   const removeProductHandler = (item: Product): void => {
+    let totalPrice: number = 0;
     let products: CartItem[] = [];
-    basket.forEach((pItem: CartItem) => {
-      let productRef = { ...pItem };
-      if (productRef.id === item.id) {
-        productRef.quantity -= 1;
-        productRef.actual_price = calculateActualPrice(productRef.quantity, productRef.unit_price);
+
+    basket.forEach((bItem: CartItem) => {
+      let pItem = { ...bItem };
+      if (pItem.id === item.id) {
+        pItem.quantity -= 1;
+        pItem.actual_price = calculateActualPrice(
+          pItem.quantity,
+          pItem.unit_price
+        );
       }
 
-      if (productRef.quantity) {
-        products.push(productRef)
+      if (pItem.offer) {
+        pItem.special_price = calculateDiscountPrice(
+          pItem.quantity,
+          pItem.unit_price,
+          pItem.offer
+        )
+      }
+
+      if (pItem.quantity) {
+        totalPrice += pItem.special_price || pItem.actual_price;
+        products.push(pItem)
       }
     })
 
     setBasket([...products]);
+    setBasketTotal(totalPrice);
   }
 
-  const calculateActualPrice = (quantity: number, unit_price: number): number => {
+  const calculateActualPrice = (
+    quantity: number,
+    unit_price: number
+  ): number => {
     return quantity * unit_price;
   }
 
-  /* const calculateDiscountPrice = (quantity: number, unit_price: number): number => {
-    return quantity * unit_price;
-  } */
+  const calculateDiscountPrice = (
+    quantity: number,
+    unit_price: number,
+    offer: SpecialOffer
+  ): number => {
+    const discountQty = Math.floor(quantity / offer.no_of_units);
+    const normalQty = Math.floor(quantity % offer.no_of_units);
+
+    return (discountQty * offer.discount_price) + (normalQty * unit_price);
+  }
 
   return (
     <div className="App">
@@ -153,7 +191,7 @@ const App = () => {
                       <img className="me-3" src={item.image} alt={item.name} />
                     </td>
                     <td>
-                      <h5 className="mb-0">Product {item.name}</h5>
+                      <h6 className="mb-0">Product {item.name}</h6>
                     </td>
                     <td>
                       <small>{item.unit_price}</small>
@@ -165,7 +203,7 @@ const App = () => {
                       <small>{item.actual_price}</small>
                     </td>
                     <td>
-                      <small>{item.actual_price}</small>
+                      <small>{item.special_price}</small>
                     </td>
                   </tr>
                 )}
@@ -173,8 +211,8 @@ const App = () => {
               <tfoot>
                 <tr>
                   <td></td>
-                  <th colSpan={4}>Total</th>
-                  <td>500</td>
+                  <th colSpan={3}>Grand Total</th>
+                  <th colSpan={2}>{basketTotal}</th>
                 </tr>
               </tfoot>
             </table>
