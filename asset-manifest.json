@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/checkout_system/static/css/main.a73415aa.css",
+    "main.js": "/checkout_system/static/js/main.c9678892.js",
+    "index.html": "/checkout_system/index.html",
+    "main.a73415aa.css.map": "/checkout_system/static/css/main.a73415aa.css.map",
+    "main.c9678892.js.map": "/checkout_system/static/js/main.c9678892.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a73415aa.css",
+    "static/js/main.c9678892.js"
+  ]
+}
